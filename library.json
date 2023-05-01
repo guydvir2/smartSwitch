@@ -1,0 +1,25 @@
+{
+    "name": "smartSwitch",
+    "version": "0.71",
+    "description": "smartSwitch for IOT ESP32/8266",
+    "keywords": "smartSwitch, IOT, Lights",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/guydvir2/smartSwitch"
+    },
+    "authors": [
+        {
+            "name": "guyDvir",
+            "email": "",
+            "url": ""
+        }
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/guydvir2/smartSwitch",
+    "dependencies": {
+        "thomasfredericks/Chrono": "^1.2.0",
+        "ronbentley1/ez_switch_lib": "^3.0.0"
+    },
+    "frameworks": "*",
+    "platforms": "*"
+}
