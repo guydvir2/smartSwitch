@@ -1,6 +1,6 @@
 {
     "name": "smartSwitch",
-    "version": "0.71",
+    "version": "0.75",
     "description": "smartSwitch for IOT ESP32/8266",
     "keywords": "smartSwitch, IOT, Lights",
     "repository": {
