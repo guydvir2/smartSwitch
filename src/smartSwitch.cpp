@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include "smartSwitch.h"
 
-smartSwitch::smartSwitch() : _inSW(1),
-                             _timeout_clk(Chrono::MILLIS)
+smartSwitch::smartSwitch(bool use_debug) : _inSW(1),
+                                           _timeout_clk(Chrono::MILLIS)
 {
     _id = _next_id++;
+    useDebug = use_debug;
 }
 
 void smartSwitch::set_id(uint8_t i)

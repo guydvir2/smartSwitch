@@ -13,11 +13,11 @@ public:
     bool OUTPUT_ON = HIGH;     /* configurable */
     bool BUTTON_PRESSED = LOW; /* configurable */
 
-    const char *ver = "smartSwitch_v0.75";
+    const char *ver = "smartSwitch_v0.75a";
     char name[MAX_TOPIC_SIZE];
     SW_act_telem telemtryMSG;
 
-    smartSwitch();
+    smartSwitch(bool use_debug=false);
     void set_id(uint8_t i);
     void set_timeout(int t = 0);
     void set_name(const char *Name = "smartSW");

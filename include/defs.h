@@ -17,7 +17,6 @@
 #define DBG(a)                    \
     if (useDebug)                 \
     {                             \
-        Serial.print(F("DBG: ")); \
         Serial.print(a);          \
     }
 #endif
@@ -25,7 +24,6 @@
 #define DBGL(a)                   \
     if (useDebug)                 \
     {                             \
-        Serial.print(F("DBG: ")); \
         Serial.println(a);        \
     }
 #endif
