@@ -12,27 +12,25 @@
 #define MINUTES (60 * SECONDS)
 #define TimeFactor MINUTES
 
-
 #ifndef DBG
-#define DBG(a)                    \
-    if (useDebug)                 \
-    {                             \
-        Serial.print(a);          \
+#define DBG(a)           \
+    if (useDebug)        \
+    {                    \
+        Serial.print(a); \
     }
 #endif
 #ifndef DBGL
-#define DBGL(a)                   \
-    if (useDebug)                 \
-    {                             \
-        Serial.println(a);        \
+#define DBGL(a)            \
+    if (useDebug)          \
+    {                      \
+        Serial.println(a); \
     }
 #endif
-
-
 
 struct SW_act_telem
 {
     bool newMSG = false;
+    bool lockdown = false;
     uint8_t pwm = 255;   /* PWM precentage */
     uint8_t state = 255; /* Up/Down/ Off */
     uint8_t reason = 3;  /* What triggered the button */
