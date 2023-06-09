@@ -10,7 +10,7 @@
 
 #define SECONDS 1000
 #define MINUTES (60 * SECONDS)
-#define TimeFactor MINUTES
+#define TimeFactor SECONDS
 
 #ifndef DBG
 #define DBG(a)           \

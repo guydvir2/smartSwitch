@@ -416,6 +416,13 @@ void smartSwitch::_button_loop()
         {
             turnON_cb(BUTTON_INPUT);
         }
+        else if (_inSW.switches[_ez_sw_id].switch_status == !on && (get_SWstate() == 0)) // || (get_SWstate() == 255 && _guessState == SW_OFF)))
+        {
+            yield();
+            DBG(F("SW#:"));
+            DBG(_id);
+            DBGL(F(": WAS ALREADY OFF (PROB_TIMER)"));
+        }
         else
         {
             yield();
