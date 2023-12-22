@@ -44,6 +44,7 @@ struct SW_props
     uint8_t inpin = UNDEF_PIN;
     uint8_t outpin = UNDEF_PIN;
     uint8_t indicpin = UNDEF_PIN;
+    int TO_dur = 0;
 
     bool PWM = false;
     bool timeout = false;

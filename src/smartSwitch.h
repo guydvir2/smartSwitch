@@ -9,15 +9,15 @@
 class smartSwitch
 {
 public:
-    bool useDebug = false;
     bool OUTPUT_ON = HIGH;     /* configurable */
     bool BUTTON_PRESSED = LOW; /* configurable */
 
-    const char *ver = "smartSwitch_v0.75a";
+    const char *ver = "smartSwitch_v0.8";
     char name[MAX_TOPIC_SIZE];
     SW_act_telem telemtryMSG;
 
     smartSwitch(bool use_debug=false);
+    smartSwitch(bool use_debug, bool useTimoeut);
     void set_id(uint8_t i);
     void set_timeout(int t = 0);
     void set_name(const char *Name = "smartSW");
@@ -59,7 +59,7 @@ private:
 
     uint8_t _id = 0;
     static uint8_t _next_id; /* Instance counter */
-
+    bool useDebug = false;
     bool _virtCMD = false;
     bool _useButton = false;
     bool _guessState = false;

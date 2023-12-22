@@ -7,6 +7,12 @@ smartSwitch::smartSwitch(bool use_debug) : _inSW(1),
     _id = _next_id++;
     useDebug = use_debug;
 }
+smartSwitch::smartSwitch(bool use_debug, bool useTimeout) : _inSW(1)
+{
+    _id = _next_id++;
+    useDebug = use_debug;
+    _use_timeout = false;
+}
 
 void smartSwitch::set_id(uint8_t i)
 {
