@@ -16,8 +16,7 @@ public:
     char name[MAX_TOPIC_SIZE];
     SW_act_telem telemtryMSG;
 
-    smartSwitch(bool use_debug=false);
-    smartSwitch(bool use_debug, bool useTimoeut);
+    smartSwitch(bool use_debug = false);
     void set_id(uint8_t i);
     void set_timeout(int t = 0);
     void set_name(const char *Name = "smartSW");
@@ -50,7 +49,6 @@ public:
     bool is_useButton();
 
 private:
-    uint8_t _ez_sw_id = 0;
     uint8_t _DEFAULT_PWM_INTENSITY = 0;
     uint8_t _button_type = 255;
     uint8_t _outputPin = UNDEF_PIN;
@@ -75,7 +73,7 @@ private:
     Chrono _timeout_clk;
 
     /* inputs only */
-    unsigned long _DEFAULT_TIMEOUT_DUARION = 1; // in seconds
+    unsigned long _DEFAULT_TIMEOUT_DUARION = 0; // in seconds
     unsigned long _adHoc_timeout_duration = 0;  // in seconds
     unsigned long _last_button_press = 0;
 
@@ -90,7 +88,7 @@ private:
     void _turn_indic_on();
     void _turn_indic_off();
     void _start_timeout_clock();
-    void _update_telemetry(uint8_t state, uint8_t type, unsigned long te = 0, uint8_t pwm = 255);
+    void _update_telemetry(uint8_t state, uint8_t type, uint8_t pwm = 255);
 };
 
 #endif

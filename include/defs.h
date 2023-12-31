@@ -31,26 +31,13 @@ struct SW_act_telem
 {
     bool newMSG = false;
     bool lockdown = false;
+    bool indic_state = false;
     uint8_t pwm = 255;   /* PWM precentage */
     uint8_t state = 255; /* Up/Down/ Off */
     uint8_t reason = 3;  /* What triggered the button */
     uint8_t pressCount = 0;
     unsigned long clk_end = 0;
-};
-struct SW_props
-{
-    uint8_t id = 0;
-    uint8_t type = 0;
-    uint8_t inpin = UNDEF_PIN;
-    uint8_t outpin = UNDEF_PIN;
-    uint8_t indicpin = UNDEF_PIN;
-    int TO_dur = 0;
-
-    bool PWM = false;
-    bool timeout = false;
-    bool virtCMD = false;
-    bool lockdown = false;
-    const char *name;
+    unsigned long clk_start = 0;
 };
 
 enum SWTypes : const uint8_t
@@ -71,6 +58,24 @@ enum SWstates : const uint8_t
 {
     SW_OFF,
     SW_ON
+};
+struct SW_props
+{
+    uint8_t id = 0;
+    uint8_t type = NO_INPUT;
+    uint8_t inpin = UNDEF_PIN;
+    uint8_t outpin = UNDEF_PIN;
+    uint8_t indicpin = UNDEF_PIN;
+    uint8_t PWM_intense = 0;
+
+    int TO_dur = 0;
+    const char *name;
+
+    bool timeout = false;
+    bool virtCMD = false;
+    bool lockdown = false;
+    bool outputON = HIGH;
+    bool inputPressed = LOW;
 };
 
 /* "Virtcmd" is defined when output is not defined
