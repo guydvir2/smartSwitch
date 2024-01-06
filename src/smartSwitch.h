@@ -12,7 +12,7 @@ public:
     bool OUTPUT_ON = HIGH;     /* configurable */
     bool BUTTON_PRESSED = LOW; /* configurable */
 
-    const char *ver = "smartSwitch_v0.8";
+    const char *ver = "smartSwitch_v0.9";
     char name[MAX_TOPIC_SIZE];
     SW_act_telem telemtryMSG;
 
@@ -23,7 +23,7 @@ public:
     void set_additional_timeout(int t, uint8_t type);
     void set_indiction(uint8_t pin = UNDEF_PIN, bool dir = 0);
     void set_input(uint8_t inpin = UNDEF_PIN, uint8_t t = 0, bool dir = LOW);
-    void set_output(uint8_t outpin = UNDEF_PIN, uint8_t intense = 0, bool dir = HIGH);
+    void set_output(uint8_t outpin = UNDEF_PIN, uint8_t intense = 0, bool dir = HIGH,bool onBoot=false);
 
     void set_lockSW();
     void set_unlockSW();
@@ -68,6 +68,7 @@ private:
     bool _indic_on = false;
     bool _PWM_ison = false;
     bool _output_pwm = false;
+    bool _onBoot = false;
 
     Switches _inSW;
     Chrono _timeout_clk;
@@ -88,6 +89,7 @@ private:
     void _turn_indic_on();
     void _turn_indic_off();
     void _start_timeout_clock();
+    unsigned long _calc_timeout(int t);
     void _update_telemetry(uint8_t state, uint8_t type, uint8_t pwm = 255);
 };
 

@@ -76,6 +76,7 @@ struct SW_props
     bool lockdown = false;
     bool outputON = HIGH;
     bool inputPressed = LOW;
+    bool onBoot = false;
 };
 
 /* "Virtcmd" is defined when output is not defined
