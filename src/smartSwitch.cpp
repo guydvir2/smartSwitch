@@ -27,22 +27,15 @@ void smartSwitch::set_additional_timeout(int t, uint8_t type)
 {
     if (_use_timeout)
     {
-        if (_adHoc_timeout_duration != 0)
+        if (get_remain_time() > 0) /* adding time in case timeout is ON */
         {
             _adHoc_timeout_duration += t * TimeFactor;
-        }
-        else if (_adHoc_timeout_duration == 0)
-        {
-            _adHoc_timeout_duration += t * TimeFactor + _DEFAULT_TIMEOUT_DUARION;
-        }
-
-        if (!get_remain_time())
-        {
-            turnON_cb(type, _adHoc_timeout_duration / 1000);
+            telemtryMSG.clk_end = _adHoc_timeout_duration;
         }
         else
         {
-            telemtryMSG.clk_end = _adHoc_timeout_duration;
+            _adHoc_timeout_duration = t;
+            turnON_cb(type, _adHoc_timeout_duration);
         }
     }
 }
@@ -76,7 +69,7 @@ void smartSwitch::set_output(uint8_t outpin, uint8_t intense, bool dir, bool onB
         else /* Relay Output*/
         {
             _output_pwm = false;
-            telemtryMSG.pwm = 0;
+            telemtryMSG.pwm = _DEFAULT_PWM_INTENSITY;
             digitalRead(_outputPin) == OUTPUT_ON ? telemtryMSG.state = SW_ON : telemtryMSG.state = SW_OFF;
         }
     }
@@ -156,7 +149,8 @@ void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
             unsigned long _t = 0;
             if (!_isOUTPUT_ON())
             {
-                _setOUTPUT_ON(intense); /* Both PWM and Switch */
+                telemtryMSG.clk_start = millis();
+                _setOUTPUT_ON(intense == 255 ? _DEFAULT_PWM_INTENSITY : intense); /* Both PWM and Switch */
                 if (_use_timeout)
                 {
                     _t = _calc_timeout(temp_TO); /* defualt or adhoc*/
@@ -165,25 +159,20 @@ void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
                 telemtryMSG.clk_end = _t;
                 _update_telemetry(SW_ON, type, intense == 255 ? _DEFAULT_PWM_INTENSITY : intense);
             }
-            else
-            {
-                DBGL(F("Already on"));
-                return;
-            }
+        }
+    }
+    else
+    {
+        if (_guessState == SW_OFF)
+        {
+            _start_timeout_clock();
+            _guessState = !_guessState;
+            telemtryMSG.clk_end = get_remain_time();
+            _update_telemetry(SW_ON, type);
         }
         else
         {
-            if (_guessState == SW_OFF)
-            {
-                _start_timeout_clock();
-                _guessState = !_guessState;
-                telemtryMSG.clk_end = get_remain_time();
-                _update_telemetry(SW_ON, type);
-            }
-            else
-            {
-                yield();
-            }
+            yield();
         }
     }
 }
@@ -393,15 +382,13 @@ void smartSwitch::_setOUTPUT_ON(uint8_t val)
 #elif defined(ESP32)
         res = 4095;
 #endif
-        DBGL(val);
-        int _val = val == 255 ? (res * _DEFAULT_PWM_INTENSITY) / 100 : (res * val) / 100;
-        analogWrite(_outputPin, _val);
+        analogWrite(_outputPin, (res * val) / 100);
         _PWM_ison = true;
         DBG(F("SW#:"));
         DBG(_id);
         DBGL(F("PWM_ON"));
         DBG(F("PWM_Value: "));
-        DBGL(_val);
+        DBGL((res * val) / 100);
     }
     else
     {
@@ -410,7 +397,6 @@ void smartSwitch::_setOUTPUT_ON(uint8_t val)
         DBG(_id);
         DBGL(F(": OUTPUT_ON"));
     }
-    telemtryMSG.clk_start = millis();
 }
 void smartSwitch::_button_loop()
 {
@@ -552,7 +538,7 @@ unsigned long smartSwitch::_calc_timeout(int t)
 {
     if (t != 0) /* timeout was defined - not using default timeout */
     {
-        _adHoc_timeout_duration = t * TimeFactor; /* Define timeout */
+        _adHoc_timeout_duration = t * TimeFactor; /* Define timeout in millis */
         return _adHoc_timeout_duration;
     }
     else

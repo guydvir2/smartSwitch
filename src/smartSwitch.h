@@ -23,7 +23,7 @@ public:
     void set_additional_timeout(int t, uint8_t type);
     void set_indiction(uint8_t pin = UNDEF_PIN, bool dir = 0);
     void set_input(uint8_t inpin = UNDEF_PIN, uint8_t t = 0, bool dir = LOW);
-    void set_output(uint8_t outpin = UNDEF_PIN, uint8_t intense = 0, bool dir = HIGH,bool onBoot=false);
+    void set_output(uint8_t outpin = UNDEF_PIN, uint8_t intense = 0, bool dir = HIGH, bool onBoot = false);
 
     void set_lockSW();
     void set_unlockSW();

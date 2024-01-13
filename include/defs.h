@@ -10,7 +10,7 @@
 
 #define SECONDS 1000
 #define MINUTES (60 * SECONDS)
-#define TimeFactor SECONDS
+#define TimeFactor MINUTES
 
 #ifndef DBG
 #define DBG(a)           \
@@ -52,7 +52,8 @@ enum InputTypes : const uint8_t
     BUTTON_INPUT,
     SW_TIMEOUT,
     EXT_0,
-    EXT_1
+    EXT_1,
+    EXT_2
 };
 enum SWstates : const uint8_t
 {
