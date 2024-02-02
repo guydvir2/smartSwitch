@@ -378,11 +378,13 @@ void smartSwitch::_setOUTPUT_ON(uint8_t val)
     {
         int res = 0;
 #if defined(ESP8266)
-        res = 255;
+        res = 1023;
 #elif defined(ESP32)
         res = 4095;
 #endif
         analogWrite(_outputPin, (res * val) / 100);
+        // analogWrite(_outputPin, 255);
+
         _PWM_ison = true;
         DBG(F("SW#:"));
         DBG(_id);
@@ -436,7 +438,7 @@ void smartSwitch::_button_loop()
         DBG(_id);
         DBGL(F(": BUTTON_PRESS"));
 
-        if (get_SWstate()) /* Is output ON ? */
+        if (get_SWstate() == true) /* Is output ON ? */
         {
             if (_button_type == MOMENTARY_SW)
             {
