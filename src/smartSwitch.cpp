@@ -147,18 +147,21 @@ void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
         if (!_virtCMD)
         {
             unsigned long _t = 0;
-            if (!_isOUTPUT_ON())
+            if (_isOUTPUT_ON())
             {
-                telemtryMSG.clk_start = millis();
-                _setOUTPUT_ON(intense == 255 ? _DEFAULT_PWM_INTENSITY : intense); /* Both PWM and Switch */
-                if (_use_timeout)
-                {
-                    _t = _calc_timeout(temp_TO); /* defualt or adhoc*/
-                    _start_timeout_clock();
-                }
-                telemtryMSG.clk_end = _t;
-                _update_telemetry(SW_ON, type, intense == 255 ? _DEFAULT_PWM_INTENSITY : intense);
+                turnOFF_cb(type);
             }
+            uint8_t i = intense == 255 ? _DEFAULT_PWM_INTENSITY : intense;
+            i = i < 101 ? i : 100;
+            telemtryMSG.clk_start = millis();
+            _setOUTPUT_ON(i); /* Both PWM and Switch */
+            if (_use_timeout)
+            {
+                _t = _calc_timeout(temp_TO); /* defualt or adhoc*/
+                _start_timeout_clock();
+            }
+            telemtryMSG.clk_end = _t;
+            _update_telemetry(SW_ON, type, i);
         }
     }
     else
@@ -386,8 +389,8 @@ void smartSwitch::_setOUTPUT_ON(uint8_t val)
         _PWM_ison = true;
         DBG(F("SW#:"));
         DBG(_id);
-        DBGL(F("PWM_ON"));
-        DBG(F("PWM_Value: "));
+        DBG(F(" PWM_ON"));
+        DBG(F(" / PWM_Value: "));
         DBGL((res * val) / 100);
     }
     else

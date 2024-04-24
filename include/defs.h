@@ -76,6 +76,7 @@ struct SW_props
     bool virtCMD = false;
     bool lockdown = false;
     bool outputON = HIGH;
+    bool indicON = HIGH;
     bool inputPressed = LOW;
     bool onBoot = false;
 };
