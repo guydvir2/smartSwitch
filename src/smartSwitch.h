@@ -12,7 +12,7 @@ public:
     bool OUTPUT_ON = HIGH;     /* configurable */
     bool BUTTON_PRESSED = LOW; /* configurable */
 
-    const char *ver = "smartSwitch_v0.9";
+    const char *ver = "smartSwitch_v1.0";
     char name[MAX_TOPIC_SIZE];
     SW_act_telem telemtryMSG;
 
