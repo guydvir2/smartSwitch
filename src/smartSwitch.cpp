@@ -41,7 +41,7 @@ void smartSwitch::set_additional_timeout(int t, uint8_t type)
 }
 void smartSwitch::set_name(const char *Name)
 {
-    strlcpy(name, Name, MAX_TOPIC_SIZE);
+    strlcpy(name, Name, MAX_TOPIC_SIZE); // Name will be Topic sent when used as VirtualCMD
 }
 void smartSwitch::set_output(uint8_t outpin, uint8_t intense, bool dir, bool onBoot)
 {
@@ -139,6 +139,11 @@ void smartSwitch::release_lockdown()
         _in_lockdown = false;
     }
 }
+void smartSwitch::set_VirtCMD(cb_func f_ON, cb_func f_OFF)
+{
+    _VirtCMD_ON = f_ON;
+    _VirtCMD_OFF = f_OFF;
+}
 
 void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
 {
@@ -163,20 +168,25 @@ void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
             telemtryMSG.clk_end = _t;
             _update_telemetry(SW_ON, type, i);
         }
+        else
+        {
+            if (_guessState == SW_OFF)
+            {
+                _start_timeout_clock();
+                _guessState = !_guessState;
+                telemtryMSG.clk_end = get_remain_time();
+                _VirtCMD_ON();
+                _update_telemetry(SW_ON, type);
+            }
+            else
+            {
+                yield();
+            }
+        }
     }
     else
     {
-        if (_guessState == SW_OFF)
-        {
-            _start_timeout_clock();
-            _guessState = !_guessState;
-            telemtryMSG.clk_end = get_remain_time();
-            _update_telemetry(SW_ON, type);
-        }
-        else
-        {
-            yield();
-        }
+        yield();
     }
 }
 void smartSwitch::turnOFF_cb(uint8_t type)
@@ -204,6 +214,7 @@ void smartSwitch::turnOFF_cb(uint8_t type)
             {
                 _stop_timeout();
                 _guessState = !_guessState;
+                _VirtCMD_OFF();
                 _update_telemetry(SW_OFF, type, 0);
             }
             else
@@ -211,6 +222,10 @@ void smartSwitch::turnOFF_cb(uint8_t type)
                 yield();
             }
         }
+    }
+    else
+    {
+        yield();
     }
 }
 unsigned long smartSwitch::get_remain_time()
@@ -409,27 +424,29 @@ void smartSwitch::_button_loop()
         DBG(_id);
         DBGL(F(": TOGGLE"));
 
-        if (_inSW.switches[0].switch_status == !on && (get_SWstate() == 1 || (get_SWstate() == 255 && _guessState == SW_ON))) /* Toggle Off */
+        if (_inSW.switches[0].switch_status == !on && (get_SWstate() == 1 ||
+                                                       (get_SWstate() == UNDEF_PIN && _guessState == SW_ON)) /* VirtCMD */) /* Toggle Off */
         {
             turnOFF_cb(BUTTON_INPUT);
         }
-        else if (_inSW.switches[0].switch_status == on && (get_SWstate() == 0 || (get_SWstate() == 255 && _guessState == SW_OFF))) /* Toggle On */
+        else if (_inSW.switches[0].switch_status == on && (get_SWstate() == 0 ||
+                                                           (get_SWstate() == UNDEF_PIN && _guessState == SW_OFF)) /* VirtCMD */) /* Toggle On */
         {
             turnON_cb(BUTTON_INPUT);
         }
         else if (_inSW.switches[0].switch_status == !on && (get_SWstate() == 0)) /* Toggled Off - but was Off by timeout */
         {
-            yield();
             DBG(F("SW#:"));
             DBG(_id);
             DBGL(F(": WAS ALREADY OFF (PROB_TIMER)"));
+            yield();
         }
         else
         {
-            yield();
             DBG(F("SW#:"));
             DBG(_id);
             DBGL(F(": ERR1"));
+            yield();
         }
     }
     else /* Button - single & multiPress types */
@@ -439,7 +456,18 @@ void smartSwitch::_button_loop()
         DBG(_id);
         DBGL(F(": BUTTON_PRESS"));
 
-        if (get_SWstate()) /* Is output ON ? */
+        if (get_SWstate() == UNDEF_PIN) /* VirtCMD Only*/
+        {
+            if (_button_type == MOMENTARY_SW && _guessState == SW_ON)
+            {
+                turnOFF_cb(BUTTON_INPUT);
+            }
+            else if (_button_type == MOMENTARY_SW && _guessState == SW_OFF)
+            {
+                turnON_cb(BUTTON_INPUT);
+            }
+        }
+        else if (get_SWstate()) /* Is output ON ? */
         {
             if (_button_type == MOMENTARY_SW)
             {

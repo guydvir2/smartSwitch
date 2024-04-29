@@ -12,11 +12,13 @@ public:
     bool OUTPUT_ON = HIGH;     /* configurable */
     bool BUTTON_PRESSED = LOW; /* configurable */
 
-    const char *ver = "smartSwitch_v1.0";
+    const char *ver = "smartSwitch_v1.1";
     char name[MAX_TOPIC_SIZE];
     SW_act_telem telemtryMSG;
+    typedef void (*cb_func)();
 
     smartSwitch(bool use_debug = false);
+    
     void set_id(uint8_t i);
     void set_timeout(int t = 0);
     void set_name(const char *Name = "smartSW");
@@ -28,6 +30,7 @@ public:
     void set_lockSW();
     void set_unlockSW();
 
+    void set_VirtCMD(cb_func f_ON, cb_func f_OFF);
     void set_useLockdown(bool t = true);
     void init_lockdown();
     void release_lockdown();
@@ -72,6 +75,8 @@ private:
 
     Switches _inSW;
     Chrono _timeout_clk;
+    cb_func _VirtCMD_ON;
+    cb_func _VirtCMD_OFF;
 
     /* inputs only */
     unsigned long _DEFAULT_TIMEOUT_DUARION = 0; // in seconds
