@@ -139,10 +139,9 @@ void smartSwitch::release_lockdown()
         _in_lockdown = false;
     }
 }
-void smartSwitch::set_VirtCMD(cb_func f_ON, cb_func f_OFF)
+void smartSwitch::set_VirtCMD(cb_func f)
 {
-    _VirtCMD_ON = f_ON;
-    _VirtCMD_OFF = f_OFF;
+    _VirtCMD = f;
 }
 
 void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
@@ -175,7 +174,7 @@ void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
                 _start_timeout_clock();
                 _guessState = !_guessState;
                 telemtryMSG.clk_end = get_remain_time();
-                _VirtCMD_ON();
+                _VirtCMD(_id,SW_ON);
                 _update_telemetry(SW_ON, type);
             }
             else
@@ -214,7 +213,7 @@ void smartSwitch::turnOFF_cb(uint8_t type)
             {
                 _stop_timeout();
                 _guessState = !_guessState;
-                _VirtCMD_OFF();
+                _VirtCMD(_id,SW_OFF);
                 _update_telemetry(SW_OFF, type, 0);
             }
             else
