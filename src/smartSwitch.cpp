@@ -434,26 +434,11 @@ void smartSwitch::_button_loop()
         DBGL(F(": BUTTON_PRESS"));
 
         uint8_t a = get_SWstate();
-        // if (a == 255)
-        // {
-        //     if (_guessState)
-        //     {
-        //         turnOFF_cb(BUTTON_INPUT);
-        //     }
-        //     else
-        //     {
-        //         turnON_cb(BUTTON_INPUT);
-        //     }
-        // }
-        // else
-        // {
-        // if (a == true) /* Is output ON ? */
-        // {
-        if (_button_type == MOMENTARY_SW && a == true || (_guessState == true && a == 255))
+        if ((_button_type == MOMENTARY_SW && a == true) || (_guessState == true && a == 255))
         {
             turnOFF_cb(BUTTON_INPUT);
         }
-        else if (_button_type == MOMENTARY_SW && a == false || (_guessState == false && a == 255))
+        else if ((_button_type == MOMENTARY_SW && a == false) || (_guessState == false && a == 255))
         {
             _multiPress_counter = 1;
             _last_button_press = millis();
@@ -483,14 +468,6 @@ void smartSwitch::_button_loop()
                 DBGL(F(" ERR2"));
             }
         }
-        // }
-        // else
-        // {
-        //     _multiPress_counter = 1;
-        //     _last_button_press = millis();
-        //     turnON_cb(BUTTON_INPUT); /* Momentary & MultiPress */
-        // }
-        // }
     }
 }
 void smartSwitch::_indic_loop()
