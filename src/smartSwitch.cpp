@@ -160,19 +160,17 @@ void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
                 _update_telemetry(SW_ON, type, intense == 255 ? _DEFAULT_PWM_INTENSITY : intense);
             }
         }
-    }
-    else
-    {
-        if (_guessState == SW_OFF)
-        {
-            _start_timeout_clock();
-            _guessState = !_guessState;
-            telemtryMSG.clk_end = get_remain_time();
-            _update_telemetry(SW_ON, type);
-        }
         else
         {
-            yield();
+            if (_guessState == SW_OFF)
+            {
+                _guessState = !_guessState;
+                _update_telemetry(SW_ON, type);
+            }
+            else
+            {
+                yield();
+            }
         }
     }
 }
@@ -199,9 +197,8 @@ void smartSwitch::turnOFF_cb(uint8_t type)
         {
             if (_guessState == SW_ON)
             {
-                _stop_timeout();
                 _guessState = !_guessState;
-                _update_telemetry(SW_OFF, type, 0);
+                _update_telemetry(SW_OFF, type);
             }
             else
             {
@@ -262,7 +259,7 @@ void smartSwitch::print_preferences()
     DBGL(F(" <<<<<< "));
 
     DBG(F("Output Type :\t"));
-    DBGL(_virtCMD ? "Virtual" : "Real-Switch");
+    DBGL(is_virtCMD() ? "Virtual" : "Real-Switch");
     DBG(F("Name:\t"));
     DBGL(name);
 
@@ -418,14 +415,12 @@ void smartSwitch::_button_loop()
         }
         else if (_inSW.switches[0].switch_status == !on && (get_SWstate() == 0)) /* Toggled Off - but was Off by timeout */
         {
-            yield();
             DBG(F("SW#:"));
             DBG(_id);
             DBGL(F(": WAS ALREADY OFF (PROB_TIMER)"));
         }
         else
         {
-            yield();
             DBG(F("SW#:"));
             DBG(_id);
             DBGL(F(": ERR1"));
@@ -438,43 +433,64 @@ void smartSwitch::_button_loop()
         DBG(_id);
         DBGL(F(": BUTTON_PRESS"));
 
-        if (get_SWstate() == true) /* Is output ON ? */
+        uint8_t a = get_SWstate();
+        // if (a == 255)
+        // {
+        //     if (_guessState)
+        //     {
+        //         turnOFF_cb(BUTTON_INPUT);
+        //     }
+        //     else
+        //     {
+        //         turnON_cb(BUTTON_INPUT);
+        //     }
+        // }
+        // else
+        // {
+        // if (a == true) /* Is output ON ? */
+        // {
+        if (_button_type == MOMENTARY_SW && a == true || (_guessState == true && a == 255))
         {
-            if (_button_type == MOMENTARY_SW)
-            {
-                turnOFF_cb(BUTTON_INPUT);
-            }
-            else if (_button_type == MULTI_PRESS_BUTTON)
-            {
-                if (_last_button_press != 0 && millis() - _last_button_press > _time_between_presses) /* press after time- turns off*/
-                {
-                    _multiPress_counter = 0;
-                    _last_button_press = 0;
-                    turnOFF_cb(BUTTON_INPUT);
-                }
-                else if (_last_button_press != 0 && millis() - _last_button_press < _time_between_presses) /* inc counter */
-                {
-                    _multiPress_counter++;
-                    _last_button_press = millis();
-
-                    _update_telemetry(SW_ON, BUTTON_INPUT, telemtryMSG.pwm);
-                }
-                else
-                {
-                    /* any error ?*/
-                    yield();
-                    DBG(F("SW#:"));
-                    DBG(_id);
-                    DBGL(F(" ERR2"));
-                }
-            }
+            turnOFF_cb(BUTTON_INPUT);
         }
-        else
+        else if (_button_type == MOMENTARY_SW && a == false || (_guessState == false && a == 255))
         {
             _multiPress_counter = 1;
             _last_button_press = millis();
             turnON_cb(BUTTON_INPUT); /* Momentary & MultiPress */
         }
+        else if (_button_type == MULTI_PRESS_BUTTON)
+        {
+            if (_last_button_press != 0 && millis() - _last_button_press > _time_between_presses) /* press after time- turns off*/
+            {
+                _multiPress_counter = 0;
+                _last_button_press = 0;
+                turnOFF_cb(BUTTON_INPUT);
+            }
+            else if (_last_button_press != 0 && millis() - _last_button_press < _time_between_presses) /* inc counter */
+            {
+                _multiPress_counter++;
+                _last_button_press = millis();
+
+                _update_telemetry(SW_ON, BUTTON_INPUT, telemtryMSG.pwm);
+            }
+            else
+            {
+                /* any error ?*/
+                yield();
+                DBG(F("SW#:"));
+                DBG(_id);
+                DBGL(F(" ERR2"));
+            }
+        }
+        // }
+        // else
+        // {
+        //     _multiPress_counter = 1;
+        //     _last_button_press = millis();
+        //     turnON_cb(BUTTON_INPUT); /* Momentary & MultiPress */
+        // }
+        // }
     }
 }
 void smartSwitch::_indic_loop()
