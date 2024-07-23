@@ -32,6 +32,7 @@ struct SW_act_telem
     bool newMSG = false;
     bool lockdown = false;
     bool indic_state = false;
+    bool input_state = false;
     uint8_t pwm = 255;   /* PWM precentage */
     uint8_t state = 255; /* Up/Down/ Off */
     uint8_t reason = 3;  /* What triggered the button */
