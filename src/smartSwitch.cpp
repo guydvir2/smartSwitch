@@ -157,6 +157,7 @@ void smartSwitch::turnON_cb(uint8_t type, unsigned int temp_TO, uint8_t intense)
                     _start_timeout_clock();
                 }
                 telemtryMSG.clk_end = _t;
+                telemtryMSG.input_state = true;
                 _update_telemetry(SW_ON, type, intense == 255 ? _DEFAULT_PWM_INTENSITY : intense);
             }
         }
@@ -184,6 +185,7 @@ void smartSwitch::turnOFF_cb(uint8_t type)
             {
                 _setOUTPUT_OFF();
                 _stop_timeout();
+                telemtryMSG.input_state = false;
                 _update_telemetry(SW_OFF, type, 0);
             }
             else
