@@ -61,7 +61,6 @@ private:
     bool _virtCMD = false;
     bool _useButton = false;
     bool _guessState = false;
-    bool _use_timeout = false;
     bool _use_lockdown = false;
     bool _use_indic = false;
     bool _in_lockdown = false;
